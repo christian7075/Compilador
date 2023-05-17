@@ -1,0 +1,189 @@
+package Analizador;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+    private Symbol s;
+    
+    public void syntax_error(Symbol s){
+        this.s = s;
+    }
+
+    public Symbol getS(){
+        return this.s;
+}
+:};
+
+terminal almohadilla, include, define, break, case, char, const, continue,
+    default, double, int, do, float, for, if, else, long, byte, t_dato, modulo,
+    op_logico, op_relacional, op_atribucion, op_incremento, op_booleano, register,
+    typedef, void, return, short, unsigned, linea, switch, while, cin, cout, printf,
+    scanf, using, namespace, std, string, comillas, cadena, igual, struct, suma,
+    resta, multiplicacion, division, parent_a, parent_c, llave_a, llave_c,
+    corchete_a, corchete_c, main, dos_puntos, coma, punto, p_coma,
+    identificador, numero, error;
+
+non terminal inicio, sentencia, declaracion, if, if_else, do_while, sentencia_booleana, switch, casos, caso, caso_defecto, break, cin, cout, printf, scanf, almohadilla, include, define, using, namespace, std, expresion_aritmetica, modulo, termino, factor, for, sentencia_for, declaracion_for, expresion, expresion_logica, expresion_relacional, op_booleano;
+
+start with inicio;
+
+inicio ::= 
+    int main parent_a parent_c llave_a sentencia llave_c |
+    main parent_a parent_c llave_a sentencia llave_c
+;
+
+sentencia ::= 
+    sentencia declaracion |
+    declaracion |
+    sentencia if | 
+    if |
+    sentencia if_else |
+    if_else |
+    sentencia do_while |
+    do_while | 
+    sentencia switch
+;
+
+declaracion ::=
+    int identificador p_coma |
+    t_dato identificador p_coma | 
+    t_dato identificador op_atribucion numero p_coma |
+    int identificador igual numero p_coma |
+    identificador igual numero p_coma |
+    t_dato identificador op_atribucion numero punto numero p_coma |
+    t_dato identificador igual numero p_coma |
+    t_dato identificador igual numero punto numero p_coma |
+    t_dato identificador op_incremento p_coma |
+    t_dato op_incremento identificador p_coma |
+    cadena identificador op_atribucion comillas comillas p_coma |
+    cadena identificador igual comillas comillas p_coma |
+    cadena identificador op_atribucion comillas identificador comillas p_coma |
+    cadena identificador igual comillas identificador comillas p_coma | 
+    short identificador p_coma | unsigned identificador p_coma |
+    struct identificador p_coma | char identificador p_coma | 
+    double identificador p_coma | float identificador p_coma | 
+    byte identificador p_coma | long identificador p_coma
+;
+
+sentencia_booleana ::=
+    op_booleano |
+    identificador op_relacional op_booleano |
+    identificador op_relacional numero |
+    identificador op_relacional identificador |
+    identificador op_relacional comillas comillas |
+    identificador op_relacional comillas identificador comillas
+;
+
+expresion_logica ::=
+    expresion_relacional |
+    expresion_relacional op_booleano expresion_logica
+;
+
+expresion_relacional ::=
+    expresion_aritmetica |
+    expresion_aritmetica op_rel
+acional expresion_aritmetica
+;
+
+op_booleano ::=
+"and" |
+"or" |
+"not"
+;
+
+if ::= if parent_a sentencia_booleana parent_c llave_a sentencia llave_c
+;
+
+if_else ::= if parent_a sentencia_booleana parent_c llave_a sentencia llave_c else llave_a sentencia llave_c
+;
+
+do_while ::= do llave_a sentencia llave_c while parent_a sentencia_booleana parent_c p_coma
+;
+
+switch ::= switch parent_a expresion parent_c llave_a casos default caso_defecto llave_c
+;
+
+casos ::= caso
+| casos caso
+;
+
+caso ::= case expresion dos_puntos sentencia
+;
+
+caso_defecto ::= default dos_puntos sentencia
+;
+
+break ::= break p_coma
+;
+
+cin ::= cin mayor_mayor identificador p_coma
+;
+
+cout ::= cout menor_menor expresion p_coma
+;
+
+printf ::= printf parent_a cadena coma expresion parent_c p_coma
+;
+
+scanf ::= scanf parent_a cadena coma direccion_identificador parent_c p_coma
+;
+
+almohadilla ::= "#"
+;
+
+include ::= almohadilla include cadena p_coma
+;
+
+define ::= almohadilla define identificador cadena p_coma
+;
+
+using ::= using namespace identificador p_coma
+;
+
+namespace ::= namespace identificador llave_a sentencia llave_c
+;
+
+std ::= std dos_puntos identificador p_coma
+;
+
+expresion_aritmetica ::=
+expresion_aritmetica suma termino |
+expresion_aritmetica resta termino |
+termino |
+expresion_aritmetica modulo termino
+;
+
+modulo ::= "%"
+;
+
+termino ::=
+termino multiplicacion factor |
+termino division factor |
+factor
+;
+
+factor ::=
+numero |
+identificador |
+parent_a expresion_aritmetica parent_c
+;
+
+for ::= for parent_a sentencia_for parent_c llave_a sentencia llave_c
+;
+
+sentencia_for ::=
+t_dato identificador igual numero p_coma sentencia_booleana p_coma declaracion_for |
+identificador igual numero p_coma sentencia_booleana p_coma declaracion_for
+;
+
+declaracion_for ::=
+identificador op_atribucion numero |
+identificador op_incremento |
+op_incremento identificador
+;
+
+expresion ::=
+expresion parent_a expresion parent_c |
+termino
+;
